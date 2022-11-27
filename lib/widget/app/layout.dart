@@ -7,11 +7,12 @@ import 'root_aware.dart';
 import '../../module/const_value.dart';
 import '../../main.dart';
 import './memoized.dart';
-import './connector.dart';
 import '../../screen/permission.dart';
 import 'package:geolocator/geolocator.dart';
+import '../../riverpod/app.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Layout extends HookWidget with  RouteAware {
+class Layout extends HookConsumerWidget with  RouteAware {
   
   final String title;
   final Widget body;
@@ -21,8 +22,12 @@ class Layout extends HookWidget with  RouteAware {
   const Layout({super.key, required this.title, required this.body, this.floatingActionButton, this.showBack = false});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Widget? drawer = useMemoized(() => showBack?null:const SafeArea(child: MyDrawer()), []);
+    //provider
+    final bool loading = ref.watch(appProvider.select((app) => app.loading));
+    final LocationPermission locationPermission = ref.watch(appProvider.select((app) => app.locationPermission));
+    final bool locationServiceEnabled = ref.watch(appProvider.select((app) => app.locationServiceEnabled));
     //routeObserver
     final route = ModalRoute.of(context);
     useEffect(() {
@@ -31,50 +36,48 @@ class Layout extends HookWidget with  RouteAware {
       return () => routeObserver.unsubscribe(routeAware);
     }, [route, routeObserver]);
     //build
-    return MyStoreConnector(
-        builder: (context, state) => Stack(
-          children: [
-            Scaffold(
-                drawer: drawer,
-                backgroundColor: const Color(0xFFF5F5F5),
-                appBar: !state.appState.locationServiceEnabled||state.appState.locationPermission!=LocationPermission.always?
-                  null
-                    :
-                  MyAppBar(title: title),
-                body: SafeArea(
-                    child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: !state.appState.locationServiceEnabled||state.appState.locationPermission!=LocationPermission.always?
-                          const Permission()
-                            :
-                          body
-                    )
-                ),
-                floatingActionButton: Memoized(
-                    keys: [state.appState.locationServiceEnabled, state.appState.locationPermission],
-                    child: floatingActionButton==null||!state.appState.locationServiceEnabled||state.appState.locationPermission!=LocationPermission.always?
-                      Container()
+    return Stack(
+      children: [
+        Scaffold(
+            drawer: drawer,
+            backgroundColor: const Color(0xFFF5F5F5),
+            appBar: !locationServiceEnabled||locationPermission!=LocationPermission.always?
+            null
+                :
+            MyAppBar(title: title),
+            body: SafeArea(
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: !locationServiceEnabled||locationPermission!=LocationPermission.always?
+                    const Permission()
                         :
-                      floatingActionButton!
+                    body
                 )
             ),
-            Memoized(
-                keys: [state.appState.isLoading],
-                child: state.appState.isLoading?
-                  Container(
-                    color: const Color.fromARGB(80, 0, 0, 0),
-                    child: const Center(
-                      child: SpinKitRing(
-                        color: mainColor,
-                        size: 70,
-                      ),
-                    ),
-                  )
+            floatingActionButton: Memoized(
+                keys: [locationServiceEnabled, locationPermission],
+                child: floatingActionButton==null||!locationServiceEnabled||locationPermission!=LocationPermission.always?
+                Container()
                     :
-                  Container()
+                floatingActionButton!
             )
-          ],
+        ),
+        Memoized(
+            keys: [loading],
+            child: loading?
+            Container(
+              color: const Color.fromARGB(80, 0, 0, 0),
+              child: const Center(
+                child: SpinKitRing(
+                  color: mainColor,
+                  size: 70,
+                ),
+              ),
+            )
+                :
+            Container()
         )
+      ],
     );
   }
 }

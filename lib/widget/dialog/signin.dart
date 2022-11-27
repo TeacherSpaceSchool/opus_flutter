@@ -11,18 +11,20 @@ import '../app/my_text.dart';
 import '../app/my_text_edit.dart';
 import '../../gql/index.dart';
 import '../../gql/passport.dart';
-import '../../redux/state/index.dart';
-import '../../redux/actions/app.dart';
 import '../../main.dart';
 import '../../module/const_value.dart';
 import '../../module/app_data.dart';
+import '../../riverpod/app.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class SignIn extends HookWidget  {
+class SignIn extends HookConsumerWidget  {
 
   const SignIn({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    //provider
+    final bool authenticated = ref.watch(appProvider.select((app) => app.authenticated));
 
     final TextEditingController loginController = useTextEditingController(text: '');
     final loginOnError = useCallback((text) => !validPhoneLogin(text), []);
@@ -86,14 +88,14 @@ class SignIn extends HookWidget  {
                   Map<String, dynamic>? res = await sendMutation(variables: {
                     'login': loginController.text,
                     'password': passwordController.text
-                  }, mutation: signinuser);
+                  }, mutation: signinuser, ref: ref);
                   final String? jwt = res?['signinuser']?['jwt'];
                   if(jwt!=null) {
                     profile = res?['signinuser'];
                     await box.put('jwt', jwt);
                     generateGqlClient(jwt);
                     FlutterBackgroundService().invoke('reinitGQL', {'jwt': jwt});
-                    StoreProvider.of<IndexState>(context).dispatch(SetAuthenticated(true));
+                    ref.read(appProvider.notifier).setAuthenticated(true);
                     Navigator.pop(context);
                   }
                   else {

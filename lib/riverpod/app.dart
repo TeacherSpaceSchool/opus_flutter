@@ -52,15 +52,24 @@ class App {
 class AppNotifier extends StateNotifier<App> {
 
   AppNotifier({
-    required authenticated,
-    required locationServiceEnabled,
-    required locationPermission
+    required bool authenticated,
+    required bool locationServiceEnabled,
+    required LocationPermission locationPermission
   }): super(App(
       authenticated: authenticated,
       locationServiceEnabled: locationServiceEnabled,
       locationPermission: locationPermission
   ));
 
+  void setAuthenticated(bool authenticated) {
+    state = state.copyWith(authenticated: authenticated);
+  }
+  void setLocationServiceEnabled(bool locationServiceEnabled) {
+    state = state.copyWith(locationServiceEnabled: locationServiceEnabled);
+  }
+  void setLocationPermission(LocationPermission locationPermission) {
+    state = state.copyWith(locationPermission: locationPermission);
+  }
   void setLoading(bool loading) {
     state = state.copyWith(loading: loading);
   }

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import '../widget/app/layout.dart';
 import '../gql/contact.dart';
 import '../gql/index.dart';
-import '../redux/state/index.dart';
+import '../../riverpod/app.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 const String title = 'Contact';
 
-class ContactPage extends HookWidget {
+class ContactPage extends HookConsumerWidget {
 
   const ContactPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool loading = ref.watch(appProvider.select((app) => app.loading));
     final gqlData = useFuture(useMemoized(() async {
       Map<String, dynamic>? res = await getQuery(
           queries: [getContactQuery],
@@ -31,14 +32,8 @@ class ContactPage extends HookWidget {
             Text(
               gqlData.data!=null?(gqlData.data?['contact']?['name']):'loading',
             ),
-            StoreConnector<IndexState, bool>(
-              converter: (store) => store.state.appState.isLoading,
-              builder: (context, isLoading) {
-                return
-                  Text(
-                      isLoading.toString()
-                  );
-              },
+            Text(
+                loading.toString()
             ),
           ],
         )

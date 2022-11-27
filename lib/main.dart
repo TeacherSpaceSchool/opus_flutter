@@ -7,12 +7,8 @@ import 'screen/deprecated.dart';
 import 'gql/index.dart';
 import 'module/const_value.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart' as redux;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import './redux/state/index.dart';
-import './redux/store.dart';
 import '../../module/app_data.dart';
 import '../../module/geolocator.dart';
 import '../../module/service.dart';
@@ -41,11 +37,6 @@ void main() async {
   final GraphQLClient gqlClient = await generateGqlClient(jwt);
   final Map<String, bool> initialAppData = await initialApp();
   final Map<String, dynamic> checkLocation_ = await checkLocation();
-  final redux.Store<IndexState> store = generateStore(
-      authenticated: initialAppData['authenticated']!,
-      locationServiceEnabled: checkLocation_['locationServiceEnabled'],
-      locationPermission: checkLocation_['locationPermission']
-  );
   initAppProvider(
       authenticated: initialAppData['authenticated']!,
       locationServiceEnabled: checkLocation_['locationServiceEnabled'],
@@ -57,15 +48,14 @@ void main() async {
   Timer(const Duration(seconds: 1), () {
     FlutterBackgroundService().invoke('initService');
   });
-  runApp(MyApp(store: store, gqlClient: ValueNotifier(gqlClient)));
+  runApp(MyApp(gqlClient: ValueNotifier(gqlClient)));
 }
 
 class MyApp extends HookWidget {
 
-  final redux.Store<IndexState> store;
   final ValueNotifier<GraphQLClient>? gqlClient;
 
-  const MyApp({super.key, required this.store, required this.gqlClient});
+  const MyApp({super.key, required this.gqlClient});
 
   @override
   Widget build(BuildContext context) {
@@ -81,25 +71,22 @@ class MyApp extends HookWidget {
     }, []);
     return Memoized(child: deprecated?
       const Deprecated(): ProviderScope(
-          child: StoreProvider(
-              store: store,
-              child: MaterialApp(
-                  navigatorKey: navigatorKey,
-                  navigatorObservers: [routeObserver],
-                  theme:ThemeData(
-                    primarySwatch: mainMaterialColor,
-                    textTheme: useMemoized(() => GoogleFonts.robotoTextTheme(
-                      Theme.of(context).textTheme,
-                    ), [context]),
-                  ),
-                  debugShowCheckedModeBanner: false,
-                  title: title,
-                  initialRoute: initialRoute,
-                  routes: {
-                    '/': (context) => const HomePage(),
-                    '/contact': (context) => const ContactPage(),
-                  }
-              )
+          child: MaterialApp(
+              navigatorKey: navigatorKey,
+              navigatorObservers: [routeObserver],
+              theme:ThemeData(
+                primarySwatch: mainMaterialColor,
+                textTheme: useMemoized(() => GoogleFonts.robotoTextTheme(
+                  Theme.of(context).textTheme,
+                ), [context]),
+              ),
+              debugShowCheckedModeBanner: false,
+              title: title,
+              initialRoute: initialRoute,
+              routes: {
+                '/': (context) => const HomePage(),
+                '/contact': (context) => const ContactPage(),
+              }
           )
       )
     );

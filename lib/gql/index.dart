@@ -3,10 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import '../redux/state/index.dart';
-import '../redux/actions/app.dart';
 import '../widget/app/snack_bar.dart';
 import '../module/const_value.dart';
+import '../riverpod/app.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final String gqlLink = '$mainUrl/graphql';
 late GraphQLClient gqlClient;
@@ -81,8 +81,8 @@ Future<GraphQLClient> generateGqlClient(jwt) async {
   return gqlClient;
 }
 
-Future<Map<String, dynamic>?> getQuery({required List<String> queries, List<Map<String, dynamic>>? variables, List<String>? queryVariables, BuildContext? context}) async {
-  if(context!=null) StoreProvider.of<IndexState>(context).dispatch(ShowLoading(true));
+Future<Map<String, dynamic>?> getQuery({required List<String> queries, List<Map<String, dynamic>>? variables, List<String>? queryVariables, BuildContext? context, WidgetRef? ref}) async {
+  if(ref!=null) ref.read(appProvider.notifier).setLoading(true);
   String queries_ = '';
   for(int i = 0; i < queries.length; i++) {
     if(i!=0) {
@@ -111,7 +111,7 @@ Future<Map<String, dynamic>?> getQuery({required List<String> queries, List<Map<
                         $queries_
                     }''')));
   final Map<String, dynamic>? res = result.data;
-  if(context!=null) StoreProvider.of<IndexState>(context).dispatch(ShowLoading(false));
+  if(ref!=null) ref.read(appProvider.notifier).setLoading(false);
   if(result.exception!=null) {
     if (kDebugMode) {
       print(result.exception);
@@ -121,13 +121,13 @@ Future<Map<String, dynamic>?> getQuery({required List<String> queries, List<Map<
   return (res);
 }
 
-Future<Map<String, dynamic>?> sendMutation({required String mutation, required Map<String, dynamic> variables, BuildContext? context, }) async {
-  if(context!=null) StoreProvider.of<IndexState>(context).dispatch(ShowLoading(true));
+Future<Map<String, dynamic>?> sendMutation({required String mutation, required Map<String, dynamic> variables, BuildContext? context, WidgetRef? ref}) async {
+  if(ref!=null) ref.read(appProvider.notifier).setLoading(true);
   final QueryResult result = await gqlClient.mutate(MutationOptions(
       variables: variables,
       document: gql(mutation)));
   final Map<String, dynamic>? res = result.data;
-  if(context!=null) StoreProvider.of<IndexState>(context).dispatch(ShowLoading(false));
+  if(ref!=null) ref.read(appProvider.notifier).setLoading(false);
   if(result.exception!=null) {
     if (kDebugMode) {
       print(result.exception);
