@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'dart:ui';
@@ -33,9 +34,20 @@ void initializeService() async {
     iosConfiguration: IosConfiguration(
       autoStart: true,
       onForeground: onStart,
+      onBackground: onIosBackground,
     ),
   );
   service.startService();
+}
+
+@pragma('vm:entry-point')
+Future<bool> onIosBackground(ServiceInstance service) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
+
+  print('vm:entry-point');
+
+  return true;
 }
 
 @pragma('vm:entry-point')
@@ -96,6 +108,7 @@ Future work(ServiceInstance service) async {
   catch(error) {
     //...
   }
+  print('Service $geoData ${DateTime.now()}');
   service.invoke('update',
     {
       'geoData': geoData,
