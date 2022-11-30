@@ -19,6 +19,7 @@ late final String device;
 var gqlClient;
 var subscription_;
 late StreamSubscription<Position> positionStream;
+String? lastCall;
 
 void initializeService() async {
   final service = FlutterBackgroundService();
@@ -45,7 +46,7 @@ Future<bool> onIosBackground(ServiceInstance service) async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
 
-  print('vm:entry-point');
+  print('onIosBackground');
 
   return true;
 }
@@ -60,6 +61,10 @@ void onStart(ServiceInstance service) async {
   serviceCallback(service);
   // timer
   Timer.periodic(const Duration(seconds: 30), (timer) async {
+    print('Service lastCall $lastCall');
+    String nowCall = DateTime.now().toString();
+    lastCall = nowCall;
+    print('Service nowCall ${nowCall}');
     await work(service);
   });
 }
@@ -108,11 +113,10 @@ Future work(ServiceInstance service) async {
   catch(error) {
     //...
   }
-  print('Service $geoData ${DateTime.now()}');
   service.invoke('update',
     {
       'geoData': geoData,
-      'date': DateTime.now().toString(),
+      'date': DateTime.now().toString()
     },
   );
 }
