@@ -65,6 +65,8 @@ void onStart(ServiceInstance service) async {
     String nowCall = DateTime.now().toString();
     lastCall = nowCall;
     print('Service nowCall ${nowCall}');
+    var geoData = await geoPosition();
+    print('GEO-T $geoData');
     await work(service);
   });
 }
@@ -113,6 +115,7 @@ Future work(ServiceInstance service) async {
   catch(error) {
     //...
   }
+  print('GEO-S $geoData');
   service.invoke('update',
     {
       'geoData': geoData,
