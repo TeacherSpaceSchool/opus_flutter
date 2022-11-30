@@ -64,10 +64,23 @@ class MyApp extends HookWidget {
       //проверка включения геолокации
       geoPosition();
       //прослушивание нажатия на уведомление
-      final notificationStream = notificationStreamController.stream.listen((data) async {
+      final notificationClickStream = notificationStreamController.stream.listen((data) async {
         navigatorKey.currentState!.pushNamed('/contact');
       });
-      return notificationStream.cancel;
+      //прослушивание пришедших уведомлений IOS
+      final notificationReceiveStream = FlutterBackgroundService().on('receiveNotification').listen((data) async {
+        print('$data ${data?['id']}');
+        showNotification(
+            id: data?['id'],
+            title: data?['text'],
+            body: '${DateTime.now()}',
+            payload: '${data?['text']} ${DateTime.now()}'
+        );
+      });
+      return () {
+        notificationClickStream.cancel();
+        notificationReceiveStream.cancel();
+      };
     }, []);
     return Memoized(child: deprecated?
       const Deprecated(): ProviderScope(

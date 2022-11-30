@@ -56,7 +56,7 @@ void onStart(ServiceInstance service) async {
   //обеспечения инициализации
   DartPluginRegistrant.ensureInitialized();
   //initial
-  await init();
+  await init(service);
   //callback
   serviceCallback(service);
   // timer
@@ -76,17 +76,17 @@ void serviceCallback(service) async {
     service.stopSelf();
   });
   service.on('reinitGQL').listen((event) async {
-    await initGQL(event['jwt']);
+    await initGQL(jwt: event['jwt'], service: service);
   });
   service.on('initService').listen((event) async {
     work(service);
   });
 }
 
-Future init() async {
+Future init(service) async {
   await initHiveForFlutter();
   box = await Hive.openBox('opusBox');
-  await initGQL(box.get('jwt'));
+  await initGQL(jwt: box.get('jwt'), service: service);
   final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   if (defaultTargetPlatform == TargetPlatform.iOS) {
     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
@@ -124,7 +124,8 @@ Future work(ServiceInstance service) async {
   );
 }
 
-Future initGQL(jwt) async {
+Future initGQL({required jwt, required service}) async {
+  int i = 0;
   if(subscription_!=null) subscription_.cancel();
   gqlClient = await generateGqlClientService(jwt);
   var subscription = gqlClient.subscribe(
@@ -133,9 +134,10 @@ Future initGQL(jwt) async {
     ),
   );
   subscription_ = subscription.listen((subscriptionData) {
-    print('service push ${subscriptionData.data!['reloadData']!['message']!['text']}');
+    i++;
+    print('service push $i ${subscriptionData.data!['reloadData']!['message']!['text']}');
     showNotification(
-      id: 888,
+      id: i,
       title: subscriptionData.data!['reloadData']!['message']!['text'],
       body: '${DateTime.now()}',
       payload: '${subscriptionData.data!['reloadData']!['message']!['text']} ${DateTime.now()}'
@@ -143,5 +145,13 @@ Future initGQL(jwt) async {
     gqlClient.mutate(MutationOptions(
         variables: {'_id': subscriptionData.data!['reloadData']!['message']!['_id']},
         document: gql(receiveWS)));
+   // if (defaultTargetPlatform == TargetPlatform.iOS) {
+      service.invoke('receiveNotification',
+        {
+          'text': subscriptionData.data!['reloadData']!['message']!['text'],
+          'id': i
+        },
+      );
+   // }
   });
 }
