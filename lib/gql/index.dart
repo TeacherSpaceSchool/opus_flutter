@@ -2,17 +2,15 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import '../widget/app/snack_bar.dart';
 import '../module/const_value.dart';
 import '../riverpod/app.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final String gqlLink = '$mainUrl/graphql';
 late GraphQLClient gqlClient;
 
 Future<GraphQLClient> generateGqlClientService(jwt) async {
-  final HttpLink httpLink = HttpLink(gqlLink, defaultHeaders: {
+  final HttpLink httpLink = HttpLink(urlGQL, defaultHeaders: {
     'type': 'service',
     ...jwt!=null?{'authorization': 'Bearer $jwt'}:{}
   });
@@ -47,7 +45,7 @@ Future<GraphQLClient> generateGqlClientService(jwt) async {
 }
 
 Future<GraphQLClient> generateGqlClient(jwt) async {
-  final HttpLink httpLink = HttpLink(gqlLink, defaultHeaders: {
+  final HttpLink httpLink = HttpLink(urlGQL, defaultHeaders: {
     'type': 'app',
     ...jwt!=null?{'authorization': 'Bearer $jwt'}:{}
   });

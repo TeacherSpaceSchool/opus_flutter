@@ -6,3 +6,6 @@ flutter doctor
 flutter build apk --target-platform android-arm,android-arm64,android-x64 --analyze-size
 #Сборка тонкого APK
 flutter build apk --split-per-abi
+#подключение к localhost
+ipconfig
+взять ipv4

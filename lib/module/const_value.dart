@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
-final String mainUrl = kDebugMode?defaultTargetPlatform==TargetPlatform.android||defaultTargetPlatform==TargetPlatform.iOS?'http://192.168.43.76:3000':'http://localhost:3000':'https://opus.kg:3000';
-final String urlGQLws = kDebugMode?defaultTargetPlatform==TargetPlatform.android||defaultTargetPlatform==TargetPlatform.iOS?'ws://192.168.43.76:3000/graphql':'ws://localhost:3000/graphql':'wss://opus.kg:3000/graphql';
+const String ipv4 = '192.168.1.102';
+/*final*/ const String mainUrl = /*kDebugMode?defaultTargetPlatform==TargetPlatform.android||defaultTargetPlatform==TargetPlatform.iOS?
+                          'http://$ipv4:3000'
+                            :
+                          'http://localhost:3000'
+                            :
+                          */'https://opus.kg:3000';
+/*final*/ const String urlGQLws = /*kDebugMode?defaultTargetPlatform==TargetPlatform.android||defaultTargetPlatform==TargetPlatform.iOS?
+                          'ws://$ipv4:3000/graphql'
+                              :
+                          'ws://localhost:3000/graphql'
+                              :
+                          */'wss://opus.kg:3000/graphql';
+/*final*/ const String urlGQL = '$mainUrl/graphql';
 
 const Map<int, Color> mainMaterialColorPalete = {
   50:Color.fromRGBO(0,169,72, 1),

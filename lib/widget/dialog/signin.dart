@@ -2,7 +2,6 @@
 
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:opus_flutter/widget/app/memoized.dart';

@@ -26,10 +26,10 @@ class HomePage extends HookConsumerWidget  {
     //initial
     useMemoized(() async {
       Map<String, dynamic>? res = await getQuery(
-          queries: [getContactQuery, getFaqsQuery],
-          queryVariables: [getFaqsVariables],
-          variables: [{'search': '', 'skip': 0}],
-          context: context
+        queries: [getContactQuery, getFaqsQuery],
+        queryVariables: [getFaqsVariables],
+        variables: [{'search': '', 'skip': 0}],
+        context: context
       );
       gqlData.value = res;
     }, []);

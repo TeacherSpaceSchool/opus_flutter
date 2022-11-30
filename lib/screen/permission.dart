@@ -4,7 +4,6 @@ import '../widget/app/my_button.dart';
 import '../widget/app/my_text.dart';
 import '../widget/app/memoized.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import '../module/geolocator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../riverpod/app.dart';
