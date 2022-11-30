@@ -138,20 +138,18 @@ Future initGQL({required jwt, required service}) async {
     print('service push $i ${subscriptionData.data!['reloadData']!['message']!['text']}');
     showNotification(
       id: i,
-      title: subscriptionData.data!['reloadData']!['message']!['text'],
+      title: 'S ${subscriptionData.data!['reloadData']!['message']!['text']}',
       body: '${DateTime.now()}',
       payload: '${subscriptionData.data!['reloadData']!['message']!['text']} ${DateTime.now()}'
     );
     gqlClient.mutate(MutationOptions(
         variables: {'_id': subscriptionData.data!['reloadData']!['message']!['_id']},
         document: gql(receiveWS)));
-   // if (defaultTargetPlatform == TargetPlatform.iOS) {
       service.invoke('receiveNotification',
         {
           'text': subscriptionData.data!['reloadData']!['message']!['text'],
           'id': i
         },
       );
-   // }
   });
 }

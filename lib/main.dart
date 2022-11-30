@@ -67,21 +67,22 @@ class MyApp extends HookWidget {
       final notificationClickStream = notificationStreamController.stream.listen((data) async {
         navigatorKey.currentState!.pushNamed('/contact');
       });
-      //прослушивание пришедших уведомлений IOS
+      return notificationClickStream.cancel;
+    }, []);
+    /*useAppLifecycleState;
+    useEffect(() {
+      //прослушивание пришедших уведомлений
       final notificationReceiveStream = FlutterBackgroundService().on('receiveNotification').listen((data) async {
         print('$data ${data?['id']}');
         showNotification(
             id: data?['id'],
-            title: data?['text'],
+            title: 'A ${data?['text']}',
             body: '${DateTime.now()}',
             payload: '${data?['text']} ${DateTime.now()}'
         );
       });
-      return () {
-        notificationClickStream.cancel();
-        notificationReceiveStream.cancel();
-      };
-    }, []);
+      return notificationReceiveStream.cancel;
+    }, []);*/
     return Memoized(child: deprecated?
       const Deprecated(): ProviderScope(
           child: MaterialApp(

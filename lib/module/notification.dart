@@ -8,7 +8,9 @@ const channelName = 'OPUS PUSH';
 Future<void> setupNotification() async {
 
   const androidSetting = AndroidInitializationSettings( '@mipmap/ic_launcher' );
-  const iosSetting = DarwinInitializationSettings();
+  const iosSetting = DarwinInitializationSettings(
+    onDidReceiveLocalNotification: onDidReceiveLocalNotification
+  );
   const initSettings = InitializationSettings (android: androidSetting, iOS: iosSetting);
   await flutterLocalNotificationsPlugin.initialize(
     initSettings,
@@ -45,4 +47,8 @@ Future<void> showNotification({required id, required body, required payload, tit
 void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
   final String? payload = notificationResponse.payload;
   notificationStreamController.add(payload);
+}
+
+void onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) async {
+  showNotification(id: id, body: body, payload: payload, title: title);
 }
