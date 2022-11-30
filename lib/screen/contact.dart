@@ -18,8 +18,7 @@ class ContactPage extends HookConsumerWidget {
     final gqlData = useFuture(useMemoized(() async {
       Map<String, dynamic>? res = await getQuery(
           queries: [getContactQuery],
-          context: context,
-          ref: ref
+          context: context
       );
       return res;
     }, []));

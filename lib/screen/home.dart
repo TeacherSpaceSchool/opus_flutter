@@ -9,7 +9,7 @@ import '../widget/app/memoized.dart';
 import '../widget/app/snack_bar.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../riverpod/app.dart';
+import '../module/notification.dart';
 
 const String title = 'Home';
 
@@ -84,7 +84,12 @@ class HomePage extends HookConsumerWidget  {
                 FloatingActionButton(
                   heroTag: "btn3",
                   onPressed: (){
-                    ref.read(appProvider.notifier).setLoading(true);
+                    showNotification(
+                        id: 750,
+                        title: 'push notification',
+                        body: '${DateTime.now()}',
+                        payload: 'push notification'
+                    );
                   },
                   tooltip: 'Increment',
                   child: const Icon(Icons.abc),

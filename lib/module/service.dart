@@ -87,11 +87,11 @@ Future work(ServiceInstance service) async {
   var geoData;
   try {
     geoData = await geoPosition();
-    if(geoData!=null) {
+    /*if(geoData!=null) {
       await gqlClient.mutate(MutationOptions(
           variables: {'geo': [geoData!.latitude, geoData!.longitude], 'device': device},
           document: gql(addGeoHistory)));
-    }
+    }*/
   }
   catch(error) {
     //...
@@ -112,6 +112,7 @@ Future initGQL(jwt) async {
     ),
   );
   subscription_ = subscription.listen((subscriptionData) {
+    print('service push ${subscriptionData.data!['reloadData']!['message']!['text']}');
     showNotification(
       id: 888,
       title: subscriptionData.data!['reloadData']!['message']!['text'],
