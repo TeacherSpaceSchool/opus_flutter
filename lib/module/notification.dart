@@ -50,5 +50,6 @@ void onDidReceiveNotificationResponse(NotificationResponse notificationResponse)
 }
 
 void onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) async {
+  print('onDidReceiveLocalNotification');
   showNotification(id: id, body: body, payload: payload, title: title);
 }
