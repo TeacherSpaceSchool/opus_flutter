@@ -10,6 +10,7 @@ import '../widget/app/snack_bar.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../module/notification.dart';
+import '../module/const_value.dart';
 
 const String title = 'Home';
 
@@ -46,6 +47,13 @@ class HomePage extends HookConsumerWidget  {
                 children: [
                   const MyText(title: 'counter: ', field: true),
                   MyText(title: counter.value.toString())
+                ]
+            ),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const MyText(title: 'Time-S: ', field: true),
+                  MyText(title: serviceStream.data?['date']!=null?(serviceStream.data?['date']):'loading...')
                 ]
             ),
             Row(

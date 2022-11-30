@@ -87,18 +87,19 @@ Future work(ServiceInstance service) async {
   var geoData;
   try {
     geoData = await geoPosition();
-    /*if(geoData!=null) {
+    if(geoData!=null) {
       await gqlClient.mutate(MutationOptions(
           variables: {'geo': [geoData!.latitude, geoData!.longitude], 'device': device},
           document: gql(addGeoHistory)));
-    }*/
+    }
   }
   catch(error) {
     //...
   }
   service.invoke('update',
     {
-      'geoData': geoData
+      'geoData': geoData,
+      'date': DateTime.now().toString(),
     },
   );
 }
