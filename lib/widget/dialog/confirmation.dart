@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../app/my_button.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../riverpod/app.dart';
 
-showConfirmation({required BuildContext context, function, mutation, onCompleted}) {
+showConfirmation({required BuildContext context, WidgetRef? ref, function, mutation, onCompleted}) {
   showDialog<String>(
       context: context,
       builder: (BuildContext context) =>
@@ -27,8 +29,10 @@ showConfirmation({required BuildContext context, function, mutation, onCompleted
                         MyButton(
                           title: 'Да',
                           function: () async {
+                            ref?.read(appProvider.notifier).setLoading(true);
                             Navigator.pop(context);
                             await function ();
+                            ref?.read(appProvider.notifier).setLoading(false);
                           },
                         )
                       ],

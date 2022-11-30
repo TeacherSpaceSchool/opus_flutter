@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/services.dart';
@@ -47,11 +45,11 @@ class SignIn extends HookConsumerWidget  {
         ),
         MyTextEdit(
           suffix: Memoized(
-            keys: [hide.value],
-            child: IconButton(
-              icon: Icon(hide.value?Icons.visibility_off:Icons.visibility, color: Colors.black45),
-              onPressed: useCallback(() => hide.value = !hide.value, [])
-            )
+              keys: [hide.value],
+              child: IconButton(
+                  icon: Icon(hide.value?Icons.visibility_off:Icons.visibility, color: Colors.black45),
+                  onPressed: useCallback(() => hide.value = !hide.value, [])
+              )
           ),
           controller: passwordController,
           checkError: passwordOnError,
@@ -60,34 +58,35 @@ class SignIn extends HookConsumerWidget  {
           errorText: 'Заполните поле',
         ),
         Memoized(
-          keys: [error.value],
-          child: error.value.isNotEmpty? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                MyText(title: error.value, color: Colors.red, bold: true,)
-              ]
-          ):Container()
+            keys: [error.value],
+            child: error.value.isNotEmpty? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  MyText(title: error.value, color: Colors.red, bold: true,)
+                ]
+            ):Container()
         ),
         const SizedBox(height: 15),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             MyButton(
-              title: 'Закрыть',
-              secondary: true,
-              function: () => Navigator.pop(context)
+                title: 'Закрыть',
+                secondary: true,
+                function: () => Navigator.pop(context)
             ),
             const SizedBox(width: 16),
             MyButton(
               title: 'Войти',
               function: () async {
                 if (validPhoneLogin(loginController.text) && passwordController.text.length > 4) {
+                  ref.read(appProvider.notifier).setLoading(true);
                   error.value = '';
                   Map<String, dynamic>? res = await sendMutation(variables: {
                     'login': loginController.text,
                     'password': passwordController.text
-                  }, mutation: signinuser, ref: ref);
+                  }, mutation: signinuser);
                   final String? jwt = res?['signinuser']?['jwt'];
                   if(jwt!=null) {
                     profile = res?['signinuser'];
@@ -100,6 +99,7 @@ class SignIn extends HookConsumerWidget  {
                   else {
                     error.value = 'Неверные данные';
                   }
+                  ref.read(appProvider.notifier).setLoading(false);
                 }
                 else {
                   HapticFeedback.vibrate();

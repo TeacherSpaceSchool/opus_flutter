@@ -45,9 +45,6 @@ void initializeService() async {
 Future<bool> onIosBackground(ServiceInstance service) async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
-
-  print('onIosBackground');
-
   return true;
 }
 
@@ -61,10 +58,8 @@ void onStart(ServiceInstance service) async {
   serviceCallback(service);
   // timer
   Timer.periodic(const Duration(seconds: 30), (timer) async {
-    print('Service lastCall $lastCall');
     String nowCall = DateTime.now().toString();
     lastCall = nowCall;
-    print('Service nowCall ${nowCall}');
     var geoData = await geoPosition();
     await work(service);
   });
@@ -114,7 +109,6 @@ Future work(ServiceInstance service) async {
   catch(error) {
     //...
   }
-  print('GEO-S $geoData');
   service.invoke('update',
     {
       'geoData': geoData,
@@ -134,7 +128,6 @@ Future initGQL({required jwt, required service}) async {
   );
   subscription_ = subscription.listen((subscriptionData) {
     i++;
-    print('service push $i ${subscriptionData.data!['reloadData']!['message']!['text']}');
     showNotification(
       id: i,
       title: 'S ${subscriptionData.data!['reloadData']!['message']!['text']}',

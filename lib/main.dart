@@ -22,6 +22,7 @@ import 'package:flutter/foundation.dart';
 
 //key
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> snackbarKey = GlobalKey<ScaffoldMessengerState>();
 late StreamController notificationStreamController;
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 var box;
@@ -86,26 +87,26 @@ class MyApp extends HookWidget {
       return notificationReceiveStream.cancel;
     }, [appLifecycleState]);
     return Memoized(child: deprecated?
-      const Deprecated(): ProviderScope(
-          child: MaterialApp(
-              navigatorKey: navigatorKey,
-              navigatorObservers: [routeObserver],
-              theme:ThemeData(
-                primarySwatch: mainMaterialColor,
-                textTheme: useMemoized(() => GoogleFonts.robotoTextTheme(
-                  Theme.of(context).textTheme,
-                ), [context]),
-              ),
-              debugShowCheckedModeBanner: false,
-              title: title,
-              initialRoute: initialRoute,
-              routes: {
-                '/': (context) => const HomePage(),
-                '/contact': (context) => const ContactPage(),
-              }
-          )
-      )
+    const Deprecated(): ProviderScope(
+        child: MaterialApp(
+            scaffoldMessengerKey: snackbarKey,
+            navigatorKey: navigatorKey,
+            navigatorObservers: [routeObserver],
+            theme:ThemeData(
+              primarySwatch: mainMaterialColor,
+              textTheme: useMemoized(() => GoogleFonts.robotoTextTheme(
+                Theme.of(context).textTheme,
+              ), [context]),
+            ),
+            debugShowCheckedModeBanner: false,
+            title: title,
+            initialRoute: initialRoute,
+            routes: {
+              '/': (context) => const HomePage(),
+              '/contact': (context) => const ContactPage(),
+            }
+        )
+    )
     );
   }
 }
-

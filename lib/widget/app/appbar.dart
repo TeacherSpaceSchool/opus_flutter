@@ -28,7 +28,7 @@ class MyAppBar extends HookConsumerWidget with PreferredSizeWidget {
                 icon: Icon(authenticated?Icons.logout:Icons.login),
                 onPressed: ()  {
                   if(authenticated) {
-                    showConfirmation(context: context, function: () async {
+                    showConfirmation(context: context, ref: ref, function: () async {
                       profile = {};
                       await box.put('jwt', null);
                       await generateGqlClient(null);

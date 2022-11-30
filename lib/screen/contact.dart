@@ -18,7 +18,6 @@ class ContactPage extends HookConsumerWidget {
     final gqlData = useFuture(useMemoized(() async {
       Map<String, dynamic>? res = await getQuery(
           queries: [getContactQuery],
-          context: context
       );
       return res;
     }, []));
@@ -27,16 +26,16 @@ class ContactPage extends HookConsumerWidget {
       showBack: true,
       title: title,
       body: Center(
-        child: Column(
-          children: [
-            Text(
-              gqlData.data!=null?(gqlData.data?['contact']?['name']):'loading',
-            ),
-            Text(
-                loading.toString()
-            ),
-          ],
-        )
+          child: Column(
+            children: [
+              Text(
+                gqlData.data!=null?(gqlData.data?['contact']?['name']):'loading',
+              ),
+              Text(
+                  loading.toString()
+              ),
+            ],
+          )
       ),
     );
   }

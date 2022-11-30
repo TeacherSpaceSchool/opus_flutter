@@ -15,13 +15,13 @@ Future<GraphQLClient> generateGqlClientService(jwt) async {
     ...jwt!=null?{'authorization': 'Bearer $jwt'}:{}
   });
   final websocketLink = WebSocketLink(
-    urlGQLws,
+      urlGQLws,
       config: SocketClientConfig(
         initialPayload: {
           'type': 'service',
           ...jwt!=null?{'authorization': 'Bearer $jwt'}:{}
         },
-    )
+      )
   );
   Link link = Link.split((request) => request.isSubscription, websocketLink, httpLink);
   final GraphQLClient gqlClient = GraphQLClient(
@@ -33,8 +33,8 @@ Future<GraphQLClient> generateGqlClientService(jwt) async {
           error: ErrorPolicy.ignore
       ),
       query: Policies(
-          fetch: FetchPolicy.noCache,
-          error: ErrorPolicy.all,
+        fetch: FetchPolicy.noCache,
+        error: ErrorPolicy.all,
       ),
       mutate: Policies(
           error: ErrorPolicy.all
@@ -68,8 +68,8 @@ Future<GraphQLClient> generateGqlClient(jwt) async {
           error: ErrorPolicy.ignore
       ),
       query: Policies(
-          fetch: FetchPolicy.noCache,
-          error: ErrorPolicy.all,
+        fetch: FetchPolicy.noCache,
+        error: ErrorPolicy.all,
       ),
       mutate: Policies(
           error: ErrorPolicy.all
@@ -79,8 +79,7 @@ Future<GraphQLClient> generateGqlClient(jwt) async {
   return gqlClient;
 }
 
-Future<Map<String, dynamic>?> getQuery({required List<String> queries, List<Map<String, dynamic>>? variables, List<String>? queryVariables, BuildContext? context, WidgetRef? ref}) async {
-  if(ref!=null) ref.read(appProvider.notifier).setLoading(true);
+Future<Map<String, dynamic>?> getQuery({required List<String> queries, List<Map<String, dynamic>>? variables, List<String>? queryVariables}) async {
   String queries_ = '';
   for(int i = 0; i < queries.length; i++) {
     if(i!=0) {
@@ -109,28 +108,25 @@ Future<Map<String, dynamic>?> getQuery({required List<String> queries, List<Map<
                         $queries_
                     }''')));
   final Map<String, dynamic>? res = result.data;
-  if(ref!=null) ref.read(appProvider.notifier).setLoading(false);
   if(result.exception!=null) {
     if (kDebugMode) {
       print(result.exception);
     }
-    if(context!=null) showSnackBar(text: 'Ошибка', type: 'e', context: context);
+    showSnackBar(text: 'Ошибка', type: 'e');
   }
   return (res);
 }
 
-Future<Map<String, dynamic>?> sendMutation({required String mutation, required Map<String, dynamic> variables, BuildContext? context, WidgetRef? ref}) async {
-  if(ref!=null) ref.read(appProvider.notifier).setLoading(true);
+Future<Map<String, dynamic>?> sendMutation({required String mutation, required Map<String, dynamic> variables}) async {
   final QueryResult result = await gqlClient.mutate(MutationOptions(
       variables: variables,
       document: gql(mutation)));
   final Map<String, dynamic>? res = result.data;
-  if(ref!=null) ref.read(appProvider.notifier).setLoading(false);
   if(result.exception!=null) {
     if (kDebugMode) {
       print(result.exception);
     }
-    if(context!=null) showSnackBar(text: 'Ошибка', type: 'e', context: context);
+    showSnackBar(text: 'Ошибка', type: 'e');
   }
   return (res);
 }

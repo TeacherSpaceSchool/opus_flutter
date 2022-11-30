@@ -11,19 +11,20 @@ import '../../riverpod/app.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Layout extends HookConsumerWidget with  RouteAware {
-  
+
   final String title;
   final Widget body;
   final bool showBack;
+  final bool loading;
   final Widget? floatingActionButton;
 
-  const Layout({super.key, required this.title, required this.body, this.floatingActionButton, this.showBack = false});
+  const Layout({super.key, required this.title, required this.body, this.floatingActionButton, this.showBack = false, this.loading = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Widget? drawer = useMemoized(() => showBack?null:const SafeArea(child: MyDrawer()), []);
     //provider
-    final bool loading = ref.watch(appProvider.select((app) => app.loading));
+    final bool loading_ = ref.watch(appProvider.select((app) => app.loading));
     final LocationPermission locationPermission = ref.watch(appProvider.select((app) => app.locationPermission));
     final bool locationServiceEnabled = ref.watch(appProvider.select((app) => app.locationServiceEnabled));
     //build
@@ -54,19 +55,19 @@ class Layout extends HookConsumerWidget with  RouteAware {
             )
         ),
         Memoized(
-            keys: [loading],
-            child: loading?
-            Container(
-              color: const Color.fromARGB(80, 0, 0, 0),
-              child: const Center(
-                child: SpinKitRing(
-                  color: mainColor,
-                  size: 70,
+            keys: [loading, loading_],
+            child: loading||loading_?
+              Container(
+                color: const Color.fromARGB(80, 0, 0, 0),
+                child: const Center(
+                  child: SpinKitRing(
+                    color: mainColor,
+                    size: 70,
+                  ),
                 ),
-              ),
-            )
-                :
-            Container()
+              )
+                  :
+              Container()
         )
       ],
     );

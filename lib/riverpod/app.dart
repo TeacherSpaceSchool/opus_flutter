@@ -75,5 +75,3 @@ class AppNotifier extends StateNotifier<App> {
   }
 
 }
-
-

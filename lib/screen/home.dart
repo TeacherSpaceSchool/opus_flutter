@@ -9,8 +9,7 @@ import '../widget/app/memoized.dart';
 import '../widget/app/snack_bar.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../module/notification.dart';
-import '../module/const_value.dart';
+import '../widget/app/snack_bar.dart';
 
 const String title = 'Home';
 
@@ -21,21 +20,23 @@ class HomePage extends HookConsumerWidget  {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //state
+    final loading = useState(true);
     final counter = useState(0);
     final gqlData = useState<Map<String, dynamic>?>(null);
     final serviceStream = useStream(FlutterBackgroundService().on('update'));
     //initial
-    useMemoized(() async {
+    useEffect((){(() async {
       Map<String, dynamic>? res = await getQuery(
-        queries: [getContactQuery, getFaqsQuery],
-        queryVariables: [getFaqsVariables],
-        variables: [{'search': '', 'skip': 0}],
-        context: context
+          queries: [getContactQuery, getFaqsQuery],
+          queryVariables: [getFaqsVariables],
+          variables: [{'search': '', 'skip': 0}],
       );
       gqlData.value = res;
-    }, []);
+      loading.value = false;
+    })();}, []);
     //render
     return Layout(
+      loading: loading.value,
       title: title,
       body: gqlData.value!=null?Center(
         child: Column(
@@ -47,13 +48,6 @@ class HomePage extends HookConsumerWidget  {
                 children: [
                   const MyText(title: 'counter: ', field: true),
                   MyText(title: counter.value.toString())
-                ]
-            ),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const MyText(title: 'Time-S: ', field: true),
-                  MyText(title: serviceStream.data?['date']!=null?(serviceStream.data?['date']):'loading...')
                 ]
             ),
             Row(
@@ -83,7 +77,7 @@ class HomePage extends HookConsumerWidget  {
                 FloatingActionButton(
                   heroTag: "btn2",
                   onPressed: (){
-                    showSnackBar(text: 'text', context: context);
+                    showSnackBar(text: 'text');
                   },
                   tooltip: 'Increment',
                   child: const Icon(Icons.receipt),
@@ -91,13 +85,7 @@ class HomePage extends HookConsumerWidget  {
                 const SizedBox(height: 10,),
                 FloatingActionButton(
                   heroTag: "btn3",
-                  onPressed: (){
-                    showNotification(
-                        id: 750,
-                        title: 'push notification',
-                        body: '${DateTime.now()}',
-                        payload: 'push notification'
-                    );
+                  onPressed: () {
                   },
                   tooltip: 'Increment',
                   child: const Icon(Icons.abc),
