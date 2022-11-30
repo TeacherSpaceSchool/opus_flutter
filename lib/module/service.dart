@@ -66,7 +66,6 @@ void onStart(ServiceInstance service) async {
     lastCall = nowCall;
     print('Service nowCall ${nowCall}');
     var geoData = await geoPosition();
-    print('GEO-T $geoData');
     await work(service);
   });
 }

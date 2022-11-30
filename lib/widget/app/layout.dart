@@ -3,9 +3,7 @@ import 'appbar.dart';
 import 'drawer.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'root_aware.dart';
 import '../../module/const_value.dart';
-import '../../main.dart';
 import './memoized.dart';
 import '../../screen/permission.dart';
 import 'package:geolocator/geolocator.dart';
@@ -28,13 +26,6 @@ class Layout extends HookConsumerWidget with  RouteAware {
     final bool loading = ref.watch(appProvider.select((app) => app.loading));
     final LocationPermission locationPermission = ref.watch(appProvider.select((app) => app.locationPermission));
     final bool locationServiceEnabled = ref.watch(appProvider.select((app) => app.locationServiceEnabled));
-    //routeObserver
-    final route = ModalRoute.of(context);
-    useEffect(() {
-      final routeAware = MyRouteAware();
-      routeObserver.subscribe(routeAware, route as PageRoute);
-      return () => routeObserver.unsubscribe(routeAware);
-    }, [route, routeObserver]);
     //build
     return Stack(
       children: [

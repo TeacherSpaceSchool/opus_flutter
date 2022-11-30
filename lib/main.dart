@@ -18,6 +18,7 @@ import 'dart:async';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import './riverpod/app.dart';
+import 'package:flutter/foundation.dart';
 
 //key
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -69,20 +70,21 @@ class MyApp extends HookWidget {
       });
       return notificationClickStream.cancel;
     }, []);
-    /*useAppLifecycleState;
+    final appLifecycleState = useAppLifecycleState();
     useEffect(() {
       //прослушивание пришедших уведомлений
       final notificationReceiveStream = FlutterBackgroundService().on('receiveNotification').listen((data) async {
-        print('$data ${data?['id']}');
-        showNotification(
-            id: data?['id'],
-            title: 'A ${data?['text']}',
-            body: '${DateTime.now()}',
-            payload: '${data?['text']} ${DateTime.now()}'
-        );
+        if(appLifecycleState == AppLifecycleState.resumed&&defaultTargetPlatform == TargetPlatform.iOS) {
+          showNotification(
+              id: data?['id'],
+              title: 'A ${data?['text']}',
+              body: '${DateTime.now()}',
+              payload: '${data?['text']} ${DateTime.now()}'
+          );
+        }
       });
       return notificationReceiveStream.cancel;
-    }, []);*/
+    }, [appLifecycleState]);
     return Memoized(child: deprecated?
       const Deprecated(): ProviderScope(
           child: MaterialApp(
